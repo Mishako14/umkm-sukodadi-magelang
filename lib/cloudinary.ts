@@ -1,7 +1,7 @@
 import axios from "axios";
 
-const CLOUD_NAME = "rds1gunf";
-const UPLOAD_PRESET = "umkm_upload";
+const CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME!;
+const UPLOAD_PRESET = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET!;
 
 export async function uploadImage(file: File) {
   const formData = new FormData();
