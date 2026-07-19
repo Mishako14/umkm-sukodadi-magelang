@@ -9,6 +9,7 @@ import CardUMKM from "@/components/CardUMKM";
 import Statistic from "@/components/Statistic";
 import Footer from "@/components/Footer";
 import About from "@/components/About";
+import BackgroundMusic from "@/components/BackgroundMusic";
 
 export default function Home() {
   const [keyword, setKeyword] = useState("");
@@ -53,6 +54,8 @@ export default function Home() {
 
   return (
     <div id="top">
+    
+    <BackgroundMusic />
     
     <Navbar />
 

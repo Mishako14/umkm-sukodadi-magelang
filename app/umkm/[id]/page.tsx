@@ -170,16 +170,16 @@ export default async function DetailUMKM({ params }: Props) {
 
             <div className="grid gap-4 md:grid-cols-2">
 
-              {umkm.wa && (
-                <a
-                  href={`https://wa.me/${umkm.wa}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="rounded-2xl bg-emerald-600 py-4 text-center text-lg font-bold text-white shadow-lg transition duration-300 hover:-translate-y-1 hover:bg-emerald-700"
-                >
-                  💬 Hubungi Penjual
-                </a>
-              )}
+            {umkm.wa && (
+  <a
+    href={`https://wa.me/${umkm.wa.replace(/^0/, "62")}`}
+    target="_blank"
+    rel="noopener noreferrer"
+    className="rounded-2xl bg-emerald-600 py-4 text-center text-lg font-bold text-white shadow-lg transition duration-300 hover:-translate-y-1 hover:bg-emerald-700"
+  >
+    💬 Hubungi Penjual
+  </a>
+)}
 
               {umkm.maps && (
                 <a

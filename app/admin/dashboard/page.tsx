@@ -39,9 +39,64 @@ export default function Dashboard() {
     listUMKM.map((item) => item.kategori)
   ).size;
   const [editId, setEditId] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
   const handleSave = async () => {
     try {
+      // Validasi Nama
+if (!nama.trim()) {
+  toast.error("Nama UMKM wajib diisi!");
+  return;
+}
+
+// Validasi Kategori
+if (!kategori.trim()) {
+  toast.error("Kategori wajib diisi!");
+  return;
+}
+
+// Validasi Deskripsi
+if (deskripsi.trim().length < 10) {
+  toast.error("Deskripsi minimal 10 karakter!");
+  return;
+}
+
+// Validasi Alamat
+if (!alamat.trim()) {
+  toast.error("Alamat wajib diisi!");
+  return;
+}
+
+// Validasi WhatsApp
+const waRegex = /^08[0-9]{8,11}$/;
+
+if (!waRegex.test(wa)) {
+  toast.error(
+    "Nomor WhatsApp harus diawali 08 dan terdiri dari 10–13 digit."
+  );
+  return;
+}
+
+if (!waRegex.test(wa)) {
+  toast.error("Nomor WhatsApp tidak valid!");
+  return;
+}
+
+// Validasi Google Maps
+if (
+  maps.trim() &&
+  !maps.includes("google.com/maps") &&
+  !maps.includes("maps.app.goo.gl")
+) {
+  toast.error("Masukkan link Google Maps yang valid!");
+  return;
+}
+
+// Validasi Foto
+if (!editId && !image) {
+  toast.error("Foto UMKM wajib dipilih!");
+  return;
+}
       let imageUrl = "";
 
       if (image) {
@@ -154,14 +209,29 @@ export default function Dashboard() {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (!user) {
-        router.push("/admin/login");
+        setLoading(false);
+        router.replace("/admin/login");
       } else {
         fetchUMKM();
+        setLoading(false);
       }
     });
-
+  
     return () => unsubscribe();
   }, [router]);
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-gray-100">
+        <div className="text-center">
+          <div className="mx-auto h-12 w-12 animate-spin rounded-full border-4 border-green-600 border-t-transparent"></div>
+  
+          <p className="mt-5 text-gray-600">
+            Memverifikasi Admin...
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <main className="min-h-screen bg-gray-100 py-10">
@@ -246,14 +316,29 @@ export default function Dashboard() {
           onChange={(e) => setAlamat(e.target.value)}
         />
 
+<input
+  className="mt-4 w-full rounded-lg border-2 border-gray-300 p-3 text-black placeholder:text-gray-500 focus:border-green-600 focus:outline-none"
+  placeholder="Nomor WhatsApp"
+  value={wa}
+  maxLength={15}
+  onChange={(e) => {
+    let angka = e.target.value.replace(/\D/g, "");
+  
+    // Format 628xxxx -> 08xxxx
+    if (angka.startsWith("62")) {
+      angka = "0" + angka.substring(2);
+    }
+  
+    // Format 8xxxx -> 08xxxx
+    else if (angka.startsWith("8")) {
+      angka = "0" + angka;
+    }
+  
+    setWa(angka);
+  }}
+/>
         <input
-          className="mt-4 w-full rounded-lg border-2 border-gray-300 p-3 text-black placeholder:text-gray-500 focus:border-green-600 focus:outline-none"
-          placeholder="Nomor WhatsApp"
-          value={wa}
-          onChange={(e) => setWa(e.target.value)}
-        />
-
-        <input
+          type="url"
           className="mt-4 w-full rounded-lg border-2 border-gray-300 p-3 text-black placeholder:text-gray-500 focus:border-green-600 focus:outline-none"
           placeholder="Link Google Maps"
           value={maps}
