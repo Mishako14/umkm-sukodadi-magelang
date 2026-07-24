@@ -50,7 +50,7 @@ export default function About() {
           <div className="relative h-[500px] overflow-hidden rounded-3xl shadow-2xl">
 
             <Image
-              src="/images/desa.jpg"
+              src="/images/desa.png"
               alt="UMKM Desa Sukodadi"
               fill
               className="object-cover"

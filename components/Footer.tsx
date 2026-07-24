@@ -1,13 +1,46 @@
+"use client";
 import Link from "next/link";
 import {
   Store,
   MapPin,
   GraduationCap,
-  Heart,
   ArrowUp,
+  Users,
+  CalendarDays,
+  Globe,
+  Clock3,
+  BarChart3,
+  Heart,
 } from "lucide-react";
+import { useEffect, useState } from "react";
+import { getVisitorStats } from "@/lib/visitor";
 
 export default function Footer() {
+  const [stats, setStats] = useState({
+    today: 0,
+    yesterday: 0,
+    total: 0,
+    lastUpdated: "-",
+  });
+
+  useEffect(() => {
+    async function loadStats() {
+      const data = await getVisitorStats();
+
+      if (data) {
+        setStats({
+          today: data.today ?? 0,
+          yesterday: data.yesterday ?? 0,
+          total: data.total ?? 0,
+          lastUpdated: data.lastUpdated?.toDate()
+            ? data.lastUpdated.toDate().toLocaleString("id-ID")
+            : "-",
+        });
+      }
+    }
+
+    loadStats();
+  }, []);
   return (
     <footer className="relative mt-24 overflow-hidden bg-slate-900 text-white">
 
@@ -17,7 +50,7 @@ export default function Footer() {
 
       <div className="relative mx-auto max-w-7xl px-6 py-16">
 
-        <div className="grid gap-12 lg:grid-cols-3">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
 
           {/* Logo */}
           <div>
@@ -133,6 +166,52 @@ export default function Footer() {
             </div>
 
           </div>
+          {/* Statistik Website */}
+<div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6">
+  <h3 className="flex items-center gap-2 text-lg font-semibold text-white mb-5">
+    <BarChart3 className="text-green-400" size={20} />
+    Statistik Website
+  </h3>
+
+  <div className="space-y-4">
+
+    <div className="flex justify-between items-center">
+      <div className="flex items-center gap-2 text-gray-300">
+        <Users size={18} className="text-green-400" />
+        <span>Hari Ini</span>
+      </div>
+      <span className="text-[22px] font-semibold text-white">{stats.today}</span>
+    </div>
+
+    <div className="flex justify-between items-center">
+      <div className="flex items-center gap-2 text-gray-300">
+        <CalendarDays size={18} className="text-green-400" />
+        <span>Kemarin</span>
+      </div>
+      <span className="text-[22px] font-semibold text-white"> {stats.yesterday}</span>
+    </div>
+
+    <div className="flex justify-between items-center">
+      <div className="flex items-center gap-2 text-gray-300">
+        <Globe size={18} className="text-green-400" />
+        <span>Total</span>
+      </div>
+      <span className="text-[22px] font-semibold text-white">{stats.total.toLocaleString("id-ID")}</span>
+    </div>
+
+    <div className="border-t border-white/10 pt-4">
+      <div className="flex items-center gap-2 text-gray-400 text-sm">
+        <Clock3 size={16} className="text-green-400" />
+        <span>Data Terakhir Diperbarui</span>
+      </div>
+
+      <p className="mt-1 text-white text-sm">
+      {stats.lastUpdated}
+      </p>
+    </div>
+
+  </div>
+</div>
 
         </div>
 
