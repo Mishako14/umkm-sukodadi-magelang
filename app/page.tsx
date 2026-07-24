@@ -10,12 +10,16 @@ import Statistic from "@/components/Statistic";
 import Footer from "@/components/Footer";
 import About from "@/components/About";
 import BackgroundMusic from "@/components/BackgroundMusic";
+import { incrementVisitor } from "@/lib/visitor";
 
 export default function Home() {
   const [keyword, setKeyword] = useState("");
   const [kategori, setKategori] = useState("Semua");
   const [dataUMKM, setDataUMKM] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    incrementVisitor();
+  }, []);
 
   useEffect(() => {
     const fetchUMKM = async () => {
