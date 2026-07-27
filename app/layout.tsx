@@ -15,6 +15,9 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://umkm-sukodadi-magelang.vercel.app"),
+  verification: {
+    google: "OS7L5hDCRfCr3ZmK3kL3BuKJ6QR6W2ruTtEohiDAsZs",
+  },
 
   title: {
     default: "UMKM Desa Sukodadi | Digitalisasi UMKM",
