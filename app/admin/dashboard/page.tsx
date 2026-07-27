@@ -1,11 +1,15 @@
 "use client";
 
+
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { auth, db } from "@/lib/firebase";
 import { uploadImage } from "@/lib/cloudinary";
 import DashboardPieChart from "@/components/DashboardPieChart";
+import { Users, Store, Shapes, BadgeCheck, Settings } from "lucide-react";
+import { getVisitorStats } from "@/lib/visitor";
+import Link from "next/link";
 
 import {
   collection,
@@ -40,6 +44,12 @@ export default function Dashboard() {
   ).size;
   const [editId, setEditId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState({
+    today: 0,
+    yesterday: 0,
+    total: 0,
+    lastUpdated: "-",
+  });
 
   const handleSave = async () => {
     try {
@@ -70,15 +80,11 @@ if (!alamat.trim()) {
 // Validasi WhatsApp
 const waRegex = /^08[0-9]{8,11}$/;
 
-if (!waRegex.test(wa)) {
+// Hanya divalidasi kalau diisi
+if (wa.trim() !== "" && !waRegex.test(wa)) {
   toast.error(
     "Nomor WhatsApp harus diawali 08 dan terdiri dari 10–13 digit."
   );
-  return;
-}
-
-if (!waRegex.test(wa)) {
-  toast.error("Nomor WhatsApp tidak valid!");
   return;
 }
 
@@ -207,6 +213,25 @@ if (!editId && !image) {
   };
 
   useEffect(() => {
+    const loadVisitor = async () => {
+      const data = await getVisitorStats();
+  
+      if (data) {
+        setStats({
+          today: data.today ?? 0,
+          yesterday: data.yesterday ?? 0,
+          total: data.total ?? 0,
+          lastUpdated: data.lastUpdated?.toDate()
+            ? data.lastUpdated.toDate().toLocaleString("id-ID")
+            : "-",
+        });
+      }
+    };
+  
+    loadVisitor();
+  }, []);
+
+  useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (!user) {
         setLoading(false);
@@ -235,57 +260,151 @@ if (!editId && !image) {
 
   return (
     <main className="min-h-screen bg-gray-100 py-10">
-      <div className="mx-auto max-w-4xl rounded-xl bg-white p-8 shadow-lg">
-        <div className="flex items-center justify-between">
-          <h1 className="text-3xl font-bold text-green-700">
-            Dashboard Admin
-          </h1>
-          <button
-            onClick={handleLogout}
-            className="rounded-lg bg-red-600 px-5 py-2 font-semibold text-white hover:bg-red-700"
-          >
-            Logout
-          </button>
-        </div>
+      <div className="mx-auto max-w-7xl rounded-xl bg-white p-8 shadow-lg">
+      <div className="flex items-center justify-between">
+  <h1 className="text-3xl font-bold text-green-700">
+    Dashboard Admin
+  </h1>
+
+  <div className="flex items-center gap-3">
+    <Link
+      href="/admin/settings"
+      className="flex items-center gap-2 rounded-lg bg-emerald-600 px-5 py-2 font-semibold text-white transition hover:bg-emerald-700"
+    >
+      <Settings size={18} />
+      Pengaturan
+    </Link>
+
+    <button
+      onClick={handleLogout}
+      className="rounded-lg bg-red-600 px-5 py-2 font-semibold text-white hover:bg-red-700"
+    >
+      Logout
+    </button>
+  </div>
+</div>
 
         <p className="mt-2 text-gray-600">
-          {editId ? "Edit Data UMKM" : "Tambah UMKM Baru"}
-        </p>
-        <div className="mt-8 grid gap-5 md:grid-cols-3">
+  Kelola data UMKM Desa Sukodadi
+</p>
 
-  <div className="rounded-xl bg-green-100 p-6 shadow">
-    <p className="text-gray-600">
-      Total UMKM
-    </p>
+{/* Statistik Dashboard */}
+<div className="mt-8 grid gap-5 md:grid-cols-4">
 
-    <h2 className="mt-2 text-4xl font-bold text-green-700">
+  {/* Total UMKM */}
+  <div className="rounded-2xl bg-green-100 p-6 shadow-md transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
+    <div className="flex items-center justify-between">
+      <p className="font-medium text-gray-600">
+        Total UMKM
+      </p>
+      <Store className="text-green-700" size={30} />
+    </div>
+
+    <h2 className="mt-4 text-4xl font-bold text-green-700">
       {listUMKM.length}
     </h2>
   </div>
 
-  <div className="rounded-xl bg-blue-100 p-6 shadow">
-    <p className="text-gray-600">
-      Total Kategori
-    </p>
+  {/* Total Kategori */}
+  <div className="rounded-2xl bg-blue-100 p-6 shadow-md transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
+    <div className="flex items-center justify-between">
+      <p className="font-medium text-gray-600">
+        Total Kategori
+      </p>
+      <Shapes className="text-blue-700" size={30} />
+    </div>
 
-    <h2 className="mt-2 text-4xl font-bold text-blue-700">
+    <h2 className="mt-4 text-4xl font-bold text-blue-700">
       {totalKategori}
     </h2>
   </div>
 
-  <div className="rounded-xl bg-yellow-100 p-6 shadow">
-    <p className="text-gray-600">
-      Status
-    </p>
+  {/* Total Visitor */}
+  <div className="rounded-2xl bg-purple-100 p-6 shadow-md transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
+    <div className="flex items-center justify-between">
+      <p className="font-medium text-gray-600">
+        Total Visitor
+      </p>
+      <Users className="text-purple-700" size={30} />
+    </div>
 
-    <h2 className="mt-2 text-2xl font-bold text-yellow-700">
+    <h2 className="mt-4 text-4xl font-bold text-purple-700">
+      {stats.total.toLocaleString("id-ID")}
+    </h2>
+
+    <p className="mt-2 text-sm text-gray-500">
+      Seluruh pengunjung website
+    </p>
+  </div>
+
+  {/* Status */}
+  <div className="rounded-2xl bg-yellow-100 p-6 shadow-md transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
+    <div className="flex items-center justify-between">
+      <p className="font-medium text-gray-600">
+        Status Website
+      </p>
+      <BadgeCheck className="text-yellow-700" size={30} />
+    </div>
+
+    <h2 className="mt-4 text-3xl font-bold text-yellow-700">
       Aktif
     </h2>
+
+    <p className="mt-2 text-sm text-gray-500">
+      Semua layanan berjalan normal
+    </p>
   </div>
+
+</div>
+
+{/* Pie Chart + Statistik Website */}
+<div className="mt-8 grid gap-6 lg:grid-cols-2">
 
   <DashboardPieChart data={listUMKM} />
 
+  <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-md transition-all duration-300 hover:shadow-xl">
+
+    <h2 className="mb-6 text-xl font-bold text-gray-800">
+      Statistik Website
+    </h2>
+
+    <div className="space-y-4">
+
+      <div className="flex items-center justify-between border-b pb-2">
+        <span className="text-gray-600">👥 Hari Ini</span>
+        <span className="font-bold">{stats.today}</span>
+      </div>
+
+      <div className="flex items-center justify-between border-b pb-2">
+        <span className="text-gray-600">📅 Kemarin</span>
+        <span className="font-bold">{stats.yesterday}</span>
+      </div>
+
+      <div className="flex items-center justify-between border-b pb-2">
+        <span className="text-gray-600">🌍 Total Visitor</span>
+        <span className="font-bold">
+          {stats.total.toLocaleString("id-ID")}
+        </span>
+      </div>
+
+      <div className="flex items-center justify-between">
+        <span className="text-gray-600">🕒 Update Terakhir</span>
+        <span className="text-sm font-medium">
+          {stats.lastUpdated}
+        </span>
+      </div>
+
+    </div>
+
+  </div>
+
 </div>
+
+<hr className="my-10 border-gray-300" />
+
+<h2 className="mb-6 text-2xl font-bold text-gray-900">
+  {editId ? "Edit UMKM" : "Tambah UMKM Baru"}
+</h2>
 
         <input
           className="mt-8 w-full rounded-lg border-2 border-gray-300 p-3 text-black placeholder:text-gray-500 focus:border-green-600 focus:outline-none"
@@ -318,7 +437,7 @@ if (!editId && !image) {
 
 <input
   className="mt-4 w-full rounded-lg border-2 border-gray-300 p-3 text-black placeholder:text-gray-500 focus:border-green-600 focus:outline-none"
-  placeholder="Nomor WhatsApp"
+  placeholder="Nomor WhatsApp (Opsional)"
   value={wa}
   maxLength={15}
   onChange={(e) => {
