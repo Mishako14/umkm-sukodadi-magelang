@@ -1,4 +1,5 @@
 "use client";
+import { getWebsiteSettings } from "@/lib/websiteSettings";
 import Link from "next/link";
 import {
   Store,
@@ -22,7 +23,11 @@ export default function Footer() {
     total: 0,
     lastUpdated: "-",
   });
-
+  const [website, setWebsite] = useState({
+    siteName: "UMKM Sukodadi",
+    tagline: "Digitalisasi UMKM",
+    footer: "Developed with ❤️ by KKN GIAT 16 UNNES",
+  });
   useEffect(() => {
     async function loadStats() {
       const data = await getVisitorStats();
@@ -41,6 +46,20 @@ export default function Footer() {
 
     loadStats();
   }, []);
+  useEffect(() => {
+    async function loadWebsite() {
+      const data = await getWebsiteSettings();
+  
+      setWebsite({
+        siteName: data.siteName,
+        tagline: data.tagline,
+        footer: data.footer,
+      });
+    }
+  
+    loadWebsite();
+  }, []);
+
   return (
     <footer className="relative mt-24 overflow-hidden bg-slate-900 text-white">
 
@@ -65,13 +84,13 @@ export default function Footer() {
 
               <div>
 
-                <h2 className="text-2xl font-black">
-                  UMKM Sukodadi
-                </h2>
+               <h2 className="text-2xl font-black">
+  {website.siteName}
+</h2>
 
-                <p className="text-emerald-300">
-                  Digitalisasi UMKM
-                </p>
+<p className="text-emerald-300">
+  {website.tagline}
+</p>
 
               </div>
 
@@ -223,20 +242,16 @@ export default function Footer() {
 
         <div className="flex flex-col items-center justify-between gap-5 md:flex-row">
 
-          <p className="text-center text-slate-400">
+        <p className="text-center text-slate-400">
+  © {new Date().getFullYear()} {website.siteName} •{" "}
+  <Heart
+    size={16}
+    className="mx-1 inline text-red-500"
+    fill="currentColor"
+  />{" "}
+  {website.footer}
+</p>
 
-            © {new Date().getFullYear()} UMKM Desa Sukodadi •
-            Developed with{" "}
-
-            <Heart
-              size={16}
-              className="mx-1 inline text-red-500"
-              fill="currentColor"
-            />
-
-            by KKN GIAT 16 UNNES
-
-          </p>
 
           <a
             href="#top"

@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { getWebsiteSettings } from "@/lib/websiteSettings";
 import Link from "next/link";
 import { ArrowRight, Store } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -10,6 +11,11 @@ import { db } from "@/lib/firebase";
 
 export default function Hero() {
   const [totalUMKM, setTotalUMKM] = useState(0);
+  const [website, setWebsite] = useState({
+    heroTitle: "UMKM Digital",
+    heroSubtitle: "Desa Sukodadi",
+    tagline: "🌿 Digitalisasi UMKM Desa Sukodadi",
+  });
 
   useEffect(() => {
     const fetchData = async () => {
@@ -22,6 +28,19 @@ export default function Hero() {
     };
 
     fetchData();
+  }, []);
+  useEffect(() => {
+    async function loadWebsite() {
+      const data = await getWebsiteSettings();
+  
+      setWebsite({
+        heroTitle: data.heroTitle,
+        heroSubtitle: data.heroSubtitle,
+        tagline: data.tagline,
+      });
+    }
+  
+    loadWebsite();
   }, []);
 
   return (
@@ -38,15 +57,15 @@ export default function Hero() {
         <div className="relative z-10">
 
           <span className="inline-flex items-center rounded-full bg-white/15 px-5 py-2 text-sm font-semibold text-white backdrop-blur">
-            🌿 Digitalisasi UMKM Desa Sukodadi
+          {website.tagline}
           </span>
 
           <h1 className="mt-8 text-5xl font-black leading-tight text-white lg:text-6xl">
-            UMKM Digital
+          {website.heroTitle}
           </h1>
 
           <h2 className="mt-4 text-3xl font-semibold text-emerald-100">
-            Desa Sukodadi
+          {website.heroSubtitle}
           </h2>
 
           <p className="mt-8 max-w-xl text-lg leading-9 text-emerald-50">

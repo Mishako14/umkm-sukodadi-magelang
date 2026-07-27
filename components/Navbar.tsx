@@ -3,10 +3,15 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Store, LayoutDashboard, Menu, X } from "lucide-react";
+import { getWebsiteSettings } from "@/lib/websiteSettings";
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
+  const [website, setWebsite] = useState({
+    siteName: "UMKM Sukodadi",
+    tagline: "Digitalisasi UMKM",
+  });
 
   useEffect(() => {
     const handleScroll = () => {
@@ -16,6 +21,18 @@ export default function Navbar() {
     window.addEventListener("scroll", handleScroll);
 
     return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+  useEffect(() => {
+    async function loadWebsite() {
+      const data = await getWebsiteSettings();
+  
+      setWebsite({
+        siteName: data.siteName,
+        tagline: data.tagline,
+      });
+    }
+  
+    loadWebsite();
   }, []);
 
   return (
@@ -46,7 +63,7 @@ export default function Navbar() {
                   : "text-white"
               }`}
             >
-              UMKM Sukodadi
+              {website.siteName}
             </h1>
 
             <p
@@ -56,7 +73,7 @@ export default function Navbar() {
                   : "text-emerald-100"
               }`}
             >
-              Digitalisasi UMKM
+              {website.tagline}
             </p>
 
           </div>
