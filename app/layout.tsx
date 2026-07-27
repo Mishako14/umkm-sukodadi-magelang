@@ -1,3 +1,18 @@
+import type { Metadata } from "next";
+import { Geist, Geist_Mono } from "next/font/google";
+import { Toaster } from "react-hot-toast";
+import "./globals.css";
+
+const geistSans = Geist({
+  variable: "--font-geist-sans",
+  subsets: ["latin"],
+});
+
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
+});
+
 export const metadata: Metadata = {
   metadataBase: new URL("https://umkm-sukodadi-magelang.vercel.app"),
 
@@ -7,7 +22,7 @@ export const metadata: Metadata = {
   },
 
   description:
-    "Website resmi UMKM Desa Sukodadi, Kabupaten Magelang. Menyediakan informasi produk unggulan, kerajinan, kuliner, lokasi UMKM, dan kontak pelaku usaha.",
+    "Website resmi UMKM Desa Sukodadi, Kabupaten Magelang. Menyediakan informasi produk unggulan, kerajinan, kuliner, dan kontak pelaku usaha.",
 
   keywords: [
     "UMKM Desa Sukodadi",
@@ -33,13 +48,9 @@ export const metadata: Metadata = {
     title: "UMKM Desa Sukodadi",
     description:
       "Temukan berbagai produk unggulan UMKM Desa Sukodadi Kabupaten Magelang.",
-
-      url: "https://umkm-sukodadi-magelang.vercel.app",
-
+    url: "https://umkm-sukodadi-magelang.vercel.app",
     siteName: "UMKM Desa Sukodadi",
-
     locale: "id_ID",
-
     type: "website",
   },
 
@@ -48,3 +59,27 @@ export const metadata: Metadata = {
     follow: true,
   },
 };
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <html
+      lang="id"
+      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+    >
+      <body className="min-h-full flex flex-col">
+        {children}
+
+        <Toaster
+          position="top-right"
+          toastOptions={{
+            duration: 2500,
+          }}
+        />
+      </body>
+    </html>
+  );
+}
